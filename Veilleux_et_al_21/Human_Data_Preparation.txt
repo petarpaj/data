@@ -1,0 +1,101 @@
+###New preparation
+
+##joint calling with GATK GenotypeGVCFs#
+
+#listing files in a folder onto a list
+ls *.g.vcf >All_samples.list
+
+nohup java -jar /export/common/programs/GenomeAnalysisTK.jar -T CombineGVCFs -R /export/achri_galaxy/dbs/hg19.fa -V twa.list -o Twa_pop.g.vcf
+
+   -R reference.fasta \
+   --variant sample1.g.vcf \
+   --variant sample2.g.vcf \
+   -o cohort.g.vcf
+
+#GenotypeGVCFs for a list of files (population, global)#
+##stand_call_conf = minimum phred-scaled confidence threshold at which variants should be called
+
+nohup java -jar /export/common/programs/GenomeAnalysisTK.jar -T GenotypeGVCFs -R /export/achri_galaxy/dbs/hg19.fa -V pop.list -stand_call_conf 30 -stand_emit_conf 20 -o all_pops_NEW.vcf
+
+##FILTERING WITH VCFTOOLS ###
+#filtered by removing lower quality (PASS filter only)
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf all_pops_NEW.vcf --remove-filtered-all --recode --recode-INFO-all --out all_pops_NEW_QC1.vcf
+
+#focus on only targeted regions
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf all_pops_NEW_QC1.vcf.recode.vcf --bed all_targetsOct.bed --recode --recode-INFO-all --out all_pops_NEW_targets_Oct
+
+--site-quality
+
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf all_pops_NEW_targets_Oct.recode.vcf --minGQ 20 --recode --recode-INFO-all --out all_pops_NEW_targets_GQfiltered
+
+
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf all_pops_NEW_targets_GQfiltered.recode.vcf --site-quality --out all_targets
+
+#calculate missing individuals
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf all_pops_NEW_targets_GQfiltered.recode.vcf --missing-indv --out all_pops_2018_missingindv
+
+#filter by individuals with less than 50% coverage
+awk '$5 > 0.5' all_pops_2018_missingindv.imiss | cut -f1 > lowDP_all.indv
+
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf all_pops_NEW_targets_GQfiltered.recode.vcf --remove lowDP_all.indv --recode --recode-INFO-all --out allpops_2018_targets_filterID
+
+#calculate missing sites
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf allpops_2018_targets_filterID.recode.vcf --missing-site --out all_pops2018_missingsite
+
+#filter by missing sites
+awk '$6 > 0.25' all_pops2018_missingsite.lmiss | cut -f1,2 > lowDP_all.sites
+
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf allpops_2018_targets_filterID.recode.vcf --exclude-positions lowDP_all.sites --recode --recode-INFO-all --out allpops_2018_targets_filtered
+
+#remove indels
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf allpops_2018_targets_filtered.recode.vcf --remove-indels --recode --recode-INFO-all --out all_pops_2018_target_SNPs
+
+#keep only bi-allelic sites for bayenv
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf all_pops_2018_target_SNPs.recode.vcf --min-alleles 2 --max-alleles 2 --recode --recode-INFO-all --out allpops_2018_biallelicSNPs
+
+#keep only indels
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf allpops_2018_targets_filtered.recode.vcf --keep-only-indels --recode --recode-INFO-all --out all_pops_2018_target_indels
+
+##Filter to Autosomal
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf allpops_2018_biallelicSNPs.recode.vcf --not-chr X --recode --recode-INFO-all --out allpops_2018_autosomal_biallelicSNPs
+
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf all_pops_2018_target_indels.recode.vcf --not-chr chrX --recode --recode-INFO-all --out allpops_2018_autosomal_indels
+
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf allpops_2018_multiSNPs.recode.vcf --not-chr chrX --recode --recode-INFO-all --out allpops_2018_autosomal_multiSNPs
+
+
+#######SEPARATE NEUTRAL AND CHEMOSENSORY VARIANTS###
+
+#biallelic SNPS#
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf allpops_2018_autosomal_biallelicSNPs.recode.vcf --bed neutral_targetsOct.bed --recode --recode-INFO-all --out allpops_2018_neutral_bi_SNPs
+
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf allpops_2018_autosomal_biallelicSNPs.recode.vcf --bed chemosensory_targetsOct.bed --recode --recode-INFO-all --out allpops_2018_chemosensory_bi_SNPs
+
+#for opsins, remember to use all chromosome file (opsins = X)
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf allpops_2018_biallelicSNPs.recode.vcf --bed opsins.bed --recode --recode-INFO-all --out allpops_2018_opsin_bi_SNPs
+
+#INDELS#
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf allpops_2018_autosomal_indels.recode.vcf --bed neutral_targetsOct.bed --recode --recode-INFO-all --out allpops_2018_neutral_indels
+
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf allpops_2018_autosomal_indels.recode.vcf --bed chemosensory_targetsOct.bed --recode --recode-INFO-all --out allpops_2018_chemosensory_indels
+
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf all_pops_2018_target_indels.recode.vcf  --bed opsins.bed --recode --recode-INFO-all --out allpops_2018_opsin_indels
+
+#MultiallelicSNPs#
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf allpops_2018_autosomal_multiSNPs.recode.vcf --bed neutral_targetsOct.bed --recode --recode-INFO-all --out allpops_2018_neutral_multiSNPs
+
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf allpops_2018_autosomal_multiSNPs.recode.vcf --bed chemosensory_targetsOct.bed --recode --recode-INFO-all --out allpops_2018_chemosensory_multiSNPs
+
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf allpops_2018_chemosensory_multiSNPs.recode.vcf --bed opsins.bed --recode --recode-INFO-all --out allpops_2018_opsin_multiSNPs
+
+####compare with older version####
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf allpops_2018_chemosensory_bi_SNPs.recode.vcf --diff ../older_files_wrong_filtering/allpops_chemosensorySNPs.recode.vcf --diff-site
+
+/export/common/programs/vcftools-4.2/bin/vcftools --vcf allpops_2018_chemosensory_multiSNPs.recode.vcf --diff ../older_files_wrong_filtering/allpops_NEW_multi_SNPs_final.recode.vcf --diff-site --out multiSNPs
+
+
+##GET VEP ANNOTATIONS FROM OLDER FILES###
+awk '{print $1,$2}' global_chemosensoryAF.frq > chemosensory2018.sites
+
+#filter by genotype quality
+#filtering by genotype quality >20
