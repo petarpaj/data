@@ -1,0 +1,101 @@
+####################Table S1###################
+
+This table contains information about the 4,863 deletions that we used in our analysis.
+All of these deletions have an allele-count>1 in YRI,CEU, CHB combined. 
+All these deletions are linked (r2>0.9) to at least one SNV in a 50kb radius in YRI,CEU, and CHB combined.
+Please cite this paper if using this table.
+Following is the descriptions of the columns in the table:
+
+1) CHR - the chromosome harboring the deletion.
+2) START - the start position of the deletion (hg19).
+3) END - the ending position of the deletion (hg19).
+4) ESV - the ID assigned to the deletion in 1000G Phase-3 dataset.
+5) GENE:NUMBER_OF_EXONS - if the deletion overlaps with exons, this column mentions the name of the gene and the number of exons covered for that gene by the deletion. 
+If the deletion hits exons from multiple genes, the entries are seperated by "|". An entry like "CLCNKA:5|CLCNKB:3" means that the deletion hits 5 exons of CLCNKA and 3 exons of CLCNKB.
+If the deletion hits no exon, the column takes the value "NONE".
+6) YRI_FREQ - the frequency of the deletion in YRI.
+7) CEU_FREQ - the frequency of the deletion in CEU.
+8) CHB_FREQ - the frequency of the deletion in CHB.
+9) ARCHDELSTATUS - the status of the deletion in the 4 high-coverage archaic deletion. 
+"Absent" means the deletion is not present in any of the 4 archaic genomes.
+"Introgressed" means the deletion was introgressed from archaics into modern humans. 
+"Recurrent" means that the deletion is shared between modern humans and archaics but arose in the two lineages independently.
+"Ancient" means that deletion is shared between archaics and modern humans by common descent.
+10) CHIMP_REF_STATUS - status of the deletion in the chimpanzee reference PanTro3.
+"DEL_OR_PARTIAL_DEL" means the sequence in the window of deletion is deleted or partially deleted in chimpanzees. This polymorphism may be a human specific insertion.
+"DUP" means the sequence in the window of deletion is duplicated in the chimpanzee reference.
+"Kosher" means the sequence in the window of deletion is present (once) in the chimpanzee reference.
+11) GWAS_TRAIT - the UKBIOBANK trait that is associated with the lowest p-value with one of the SNVs linked to the deletion.
+12) TOP_GWAS_SNP - the rs ID for the SNV linked to the deletion that is associated with a UKBIOBANK trait with the lowest p-value.
+13) EFFECT_SIZE - beta; the estimated effect size of the of the alternative allele of the TOP_GWAS_SNP.
+14) GWAS_P_VALUE - the p-value with which the TOP_GWAS_SNP is associated with the GWAS_TRAIT.
+15) YRI_BETAMAX - BETAMAX in YRI (see methods)
+16) YRI_BETAPRIME - BETAPRIME in YRI (see methods)
+17) CEU_BETAMAX - BETAMAX in CEU (see methods)
+18) CEU_BETAPRIME - BETAPRIME in CEU (see methods)
+19) CHB_BETAMAX - BETAMAX in CHB (see methods)
+20) CHB_BETAPRIME - BETAPRIME in CHB (see methods)
+21) GEVA_MAXAGE  - MAXAGE using GEVA (see methods)
+22) GEVA_AGEPRIME - AGEPRIME using GEVA (see methods)
+23) RELATE_AGE - Age of the deletion calculated using Relate.
+
+
+
+
+####################Table S2###################
+This table contains the status in the 4 high-coverage archaic (Neanderthals and Denisovan) genomes of all 32,152 biallelic deletions reported in the 1000G Phase-3 dataset.
+Please cite us if using this table.
+This table contains the following columns:
+
+1) CHR - the chromosome harboring the deletion.
+2) START - the start position of the deletion (hg19).
+3) END - the ending pposition of the deletion (hg19).
+4) ESV - the ID assigned to the deletion in 1000G Phase-3 dataset.
+5) SIZE - size of the deletion
+6) GENE:NUMBER_OF_EXONS - if the deletion overlaps with exons, this column mentions the name of the gene and the number of exons covered for that gene by the deletion. 
+If the deletion hits exons from multiple genes, the entries are seperated by "|". An entry like "CLCNKA:5|CLCNKB:3" means that the deletion hits 5 exons of CLCNKA and 3 exons of CLCNKB.
+If the deletion hits no exon, the column takes the value "NONE".
+7) AFR_AF - the frequency of the deletion in African populations (1000G phase-3).
+8) EUR_AF - the frequency of the deletion in European populations (1000G phase-3).
+9) EAS_AF - the frequency of the deletion in East Asian populations (1000G phase-3).
+10) SAS_AF - the frequency of the deletion in South Asian populations (1000G phase-3).
+11) ALTAI_MODZ - modified z-score of the read-depth in the window of deletion in Altai Neanderthal. If this ModZ < -5, the deletion is present in the Altai Neanderthal.
+12) VINDIJA_MODZ - modified z-score of the read-depth in the window of deletion in Vindija Neanderthal. If this ModZ < -5, the deletion is present in the Vindija Neanderthal.
+13) CHAGYRSKAYA_MODZ - modified z-score of the read-depth in the window of deletion in Chagyrskaya Neanderthal. If this ModZ < -5, the deletion is present in the Chagyrskaya Neanderthal.
+14) DENISOVAN_MODZ - modified z-score of the read-depth in the window of deletion in the Denisovan. If this ModZ < -5, the deletion is present in the Denisovan.
+15) ALTAI_DELETION - whether of the the deletion is present in the Altai Neanderthal.
+16) VINDIJA_DELETION - whether of the the deletion is present in the Vindija Neanderthal.
+17) CHAGYRSKAYA_DELETION - whether of the the deletion is present in the Chagyrskaya Neanderthal.
+18) DENISOVAN_DELETION - whether of the the deletion is present in the Denisovan.
+
+
+
+
+####################Table S3###################
+This table is a consolidated dataset constructed using the thousands of GWAS tables (one for each trait) available at http://www.nealelab.is/uk-biobank.
+This table contain all SNV associations from the UKBIOBANK data with p-values < 10^-8. Only the associations that were observed using individuals from both sexes are included.
+Please cite this paper if using this consolidated table.
+This table contains the following columns. The description for the columns is taken from  http://www.nealelab.is/uk-biobank.
+
+1) CHR - the chromosome harboring the SNV.
+2) POS - position of the SNV (hg19)
+3) REF - the reference allele
+4) ALT - the alternative allele
+5) MINOR - the minor allele (allele that is less common).
+6) MINOR_AF - the frequency of the minor allele among the UKBIOBANK individuals.
+7) LOW_CONFIDENT_VARIANT - Flag indicating low confidence results based on the following heuristics:
+- Case/control phenotypes: expected_case_minor_AC < 25 or minor_AF < 0.001.
+- Categorical phenotypes with less than 5 categories: expected_min_category_minor_AC < 25 or minor_AF < 0.001.
+- Quantitative phenotypes: minor_AF < 0.001.
+
+8) N_COMPLETE_SAMPLES - Number of samples defined for this phenotype.
+9) AC - Allele count of alt allele calculated on dosages within n_complete_samples.
+10) YTX	- Dot product of phenotype vector y and genotype vector x (alt allele count in cases for case/control phenotypes).
+11) BETA - Estimated effect size of alt allele.
+12) SE - Estimated standard error of beta.
+13) TSTAT - t-statistic of beta estimate (= beta/se).
+14) PVAL - p-value of beta significance test.
+15) PHENO - the associated phenotype.
+
+
+
